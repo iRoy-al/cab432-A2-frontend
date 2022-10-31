@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Transcoder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1 class="mt-5 text-center">Image Transcoder</h1>
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col-md m-3">
+                <div class="row">
+                    <img src="placeholder.png" id="preview" class="img-thumbnail">
+                </div>
+                <div class="row mt-3">
+                    <input type="file"id="imgFile" hidden/>
+                    <label for="imgFile" type="button" id="upload-image" class="btn btn-lg">Upload</label>
+                </div>
+            </div>
+            <div class="col-md m-3">
+                <div class="row-2 mt-5">
+                    <label for="resize-scale" class="form-label">Resize</label>        
+                    <select class="form-select" id="resize-scale">
+                        <option>x0.25</option>
+                        <option>x0.5</option>
+                        <option>x0.75</option>
+                        <option>x1</option>
+                        <option>x2</option>
+                        <option>x3</option>
+                        <option>x4</option>
+                    </select>
+                </div>
+                <div class="row-2 mt-3">
+                    <label for="format-type" class="form-label">File format</label>        
+                    <select class="form-select" id="format-type">
+                        <option>JPEG</option>
+                        <option>PNG</option>
+                        <option>WEBP</option>
+                        <option>GIF</option>
+                        <option>JP2</option>
+                        <option>TIFF</option>
+                        <option>AVIF</option>
+                    </select>
+                </div>
+                <div class="row my-5">
+                    <button type="button" id="transcode" class="btn btn-lg">Transcode</button>
+                </div>
+            </div>
+            <div class="col-md m-3">
+                <div class="row">
+                    <img src="placeholder.png" id="transcoded-preview" class="img-thumbnail">
+                </div>
+                <div class="row mt-3">
+                    <a type="button" id="download-image" class="btn btn-lg" download>Download</a>
+                    <!-- <label type="button" id="download-image" class="btn btn-lg">Download</label> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="javascript.js"></script>
+ </body>
+</html>

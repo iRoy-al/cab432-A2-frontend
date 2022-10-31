@@ -1,0 +1,28 @@
+h1 {
+    font-family: "Georgia", Georgia, "Times New Roman", Times, serif;
+}
+
+.img-thumbnail {
+    object-fit:contain;
+    width: 400px;
+    height: 400px;
+}
+
+#upload-image, #download-image {
+    width: 400px;
+    color: rgb(238, 231, 213);
+    background: rgb(0, 112, 116);
+}
+
+#transcode {
+    color: rgb(39, 39, 37);
+    background: rgb(225, 146, 106);
+}
+
+head, body {
+    background: rgb(238, 231, 213);
+}
+
+h1, .form-label {
+    color: rgb(39, 39, 37);
+}
