@@ -1,44 +1,76 @@
-const uploaded_image = document.getElementById("preview");
-const transcoded_image = document.getElementById("transcoded-preview");
-const download_image = document.getElementById("download-image");
+const files = document.getElementById('image-files');
+const instruction = document.getElementById('instruction');
+const imageTable = document.getElementById('image-table');
+const transcode = document.getElementById('transcode');
+const cancel = document.getElementById('cancel');
 
-document.getElementById('imgFile').onchange = function() {
-    document.getElementById('upload-image').click();
-    Upload();
-}
-document.getElementById('transcode').addEventListener('click', Transcode);
-document.getElementById('download-image').addEventListener('click', Download);
+files.addEventListener('change', Upload);
+transcode.addEventListener('click', Transcode);
 
+// Upload one or multiple images to transcode
 function Upload() {
-    const input_image = document.getElementById("imgFile").files[0];  
-    // Upload an image to transcode
-    const reader = new FileReader();
+    instruction.style.display = "none";
+    const imageFiles = files.files;
 
-    // const formData = new FormData();
-    // formData.append("image", input_image)
+    for (const file of imageFiles) {
+        if (!validFileType(file)) continue;
+        const image = document.createElement('img');
+        const reader = new FileReader();
 
-    // const url = "/upload";
-    // const options = {
-    //     method: 'POST',
-    //     body: formData
-    // };
+        // Insert a row for each uploaded image
+        reader.addEventListener("load", () => {
+            image.src = reader.result;
+            const row = imageTable.insertRow(imageTable.rows.length);
+            row.insertCell(0).innerHTML =`<img src="${image.src}">`;
+            row.insertCell(1).innerHTML = `${file.name}`;
+            row.insertCell(2).innerHTML = `${formatFileSize(file.size)}`;
+            row.insertCell(3).innerHTML = `<input type="button" id="delete" value="Delete" onclick="deleteRow(this)" class="btn"/>`;
+        }, false);
 
-    // Display the uploaded image
-    reader.addEventListener("load", () => {
-        uploaded_image.src = reader.result;
-    }, false);
-
-    if (input_image) {
-        reader.readAsDataURL(input_image);
+        if (file) {
+            reader.readAsDataURL(file);
+        }
     }
 }
 
-function Transcode() {
-    // Replace this code to display transcoded image
-    transcoded_image.src = uploaded_image.src;
+// Check the uploaded file type
+function validFileType(file) {
+    const fileTypes = [
+        "image/apng",
+        "image/bmp",
+        "image/gif",
+        "image/jpeg",
+        "image/pjpeg",
+        "image/png",
+        "image/svg+xml",
+        "image/tiff",
+        "image/webp",
+        "image/x-icon"
+    ];
+    return fileTypes.includes(file.type);
 }
 
+// Format file sizes for display purpose
+function formatFileSize (bytes) {
+    const sufixes = ['B', 'kB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sufixes[i]}`;
+};
+
+// Delete uploaded files
+function deleteRow(row)
+{
+    let i = row.parentNode.parentNode.rowIndex;
+    document.getElementById('image-table').deleteRow(i);
+}
+
+// Transcode image with specified size and compression level
+function Transcode() {
+    transcode.style.display = "none";
+    cancel.style.display = "block";
+}
+
+// Download transcoded image
 function Download() {
     // Replace this code to download transcoded image
-    download_image.href = transcoded_image.src
 }

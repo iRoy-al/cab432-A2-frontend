@@ -11,56 +11,61 @@
 </head>
 
 <body>
-    <h1 class="mt-5 text-center">Image Transcoder</h1>
+    <h1 class="my-4 text-center">Image Resizer</h1>
     <div class="container">
-        <div class="row mt-3">
-            <div class="col-md m-3">
-                <div class="row">
-                    <img src="placeholder.png" id="preview" class="img-thumbnail">
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10">
+                <div class="row mx-2">
+                    <div id="image-panel">
+                        <div id="instruction">Upload one or more images to resize</div>
+                        <form method="post" enctype="multipart/form-data">
+                            <table class="table table-hover" id="image-table"></table>
+                        </form>
+                    </div>
                 </div>
-                <div class="row mt-3">
-                    <input type="file"id="imgFile" hidden/>
-                    <label for="imgFile" type="button" id="upload-image" class="btn btn-lg">Upload</label>
+                <div class="row mt-4 mx-2">
+                    <label for="image-files" type="button" id="upload-image" class="btn btn-lg">Upload Images</label>
+                    <input type="file" id="image-files" multiple hidden/>
                 </div>
-            </div>
-            <div class="col-md m-3">
-                <div class="row-2 mt-5">
-                    <label for="resize-scale" class="form-label">Resize</label>        
-                    <select class="form-select" id="resize-scale">
-                        <option>x0.25</option>
-                        <option>x0.5</option>
-                        <option>x0.75</option>
-                        <option>x1</option>
-                        <option>x2</option>
-                        <option>x3</option>
-                        <option>x4</option>
-                    </select>
+                <div class="row mt-3 mx-2">
+                    <div class="col-6">
+                        <div class="d-flex-lg justify-content-between">
+                            <label for="resize-scale" class="form-label mt-1">Resize</label>
+                            <select class="form-select" id="resize-scale">
+                                <option>x0.25</option>
+                                <option>x0.5</option>
+                                <option>x0.75</option>
+                                <option>x1</option>
+                                <option>x2</option>
+                                <option>x3</option>
+                                <option>x4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex-lg justify-content-between">
+                            <label for="compression-level" class="form-label mt-1">Compression Level</label>
+                            <select class="form-select" id="resize-scale">
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                                <option>7</option>
+                                <option>8</option>
+                                <option>9</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="row-2 mt-3">
-                    <label for="format-type" class="form-label">File format</label>        
-                    <select class="form-select" id="format-type">
-                        <option>JPEG</option>
-                        <option>PNG</option>
-                        <option>WEBP</option>
-                        <option>GIF</option>
-                        <option>JP2</option>
-                        <option>TIFF</option>
-                        <option>AVIF</option>
-                    </select>
-                </div>
-                <div class="row my-5">
+                <div class="row my-4 mx-2">
                     <button type="button" id="transcode" class="btn btn-lg">Transcode</button>
+                    <button type="button" id="cancel" class="btn btn-lg">Cancel</button>
                 </div>
             </div>
-            <div class="col-md m-3">
-                <div class="row">
-                    <img src="placeholder.png" id="transcoded-preview" class="img-thumbnail">
-                </div>
-                <div class="row mt-3">
-                    <a type="button" id="download-image" class="btn btn-lg" download>Download</a>
-                    <!-- <label type="button" id="download-image" class="btn btn-lg">Download</label> -->
-                </div>
-            </div>
+            <div class="col-1"></div>
         </div>
     </div>
     <script type="text/javascript" src="javascript.js"></script>
