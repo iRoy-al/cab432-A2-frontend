@@ -18,8 +18,10 @@ const upload = multer({
     }
 });
 
-router.post('/', upload.single('food_image'), async (req, res) => {
+router.post('/', upload.single('image'), async (req, res) => {
     console.log(req.file)
+    console.log(req.body.resizes)
+    console.log(req.body.compression)
     res.send("Hi")
 });
 

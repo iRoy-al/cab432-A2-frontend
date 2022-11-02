@@ -3,6 +3,8 @@ const instruction = document.getElementById('instruction');
 const imageTable = document.getElementById('image-table');
 const transcode = document.getElementById('transcode');
 const cancel = document.getElementById('cancel');
+const resize = document.getElementById('resize-scale');
+const compression = document.getElementById('compression-level');
 
 files.addEventListener('change', Upload);
 transcode.addEventListener('click', Transcode);
@@ -77,21 +79,22 @@ function apiCall(options) {
 
 // Transcode image with specified size and compression level
 function Transcode() {
-
+    console.log(resize.value)
     const imageFiles = files.files;
 
     const formData = new FormData();
 
     for (const file of imageFiles) {
-        console.log(file)
-        formData.append("food_image", file)
+        formData.append("image", file)
+        formData.append("resizes", resize.value)
+        formData.append("compression", compression.value)
     }
 
     const options = {
         method: 'POST',
         body: formData
     }
-    
+
     apiCall(options)
     transcode.style.display = "none";
     cancel.style.display = "block";
