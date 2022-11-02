@@ -6,7 +6,6 @@ const cancel = document.getElementById('cancel');
 
 files.addEventListener('change', Upload);
 transcode.addEventListener('click', Transcode);
-
 // Upload one or multiple images to transcode
 function Upload() {
     instruction.style.display = "none";
@@ -16,7 +15,6 @@ function Upload() {
         if (!validFileType(file)) continue;
         const image = document.createElement('img');
         const reader = new FileReader();
-
         // Insert a row for each uploaded image
         reader.addEventListener("load", () => {
             image.src = reader.result;
