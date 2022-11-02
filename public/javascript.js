@@ -62,8 +62,37 @@ function deleteRow(row)
     document.getElementById('image-table').deleteRow(i);
 }
 
+function apiCall(options) { 
+    const url = '/test'
+
+    fetch(url, options)
+    .then((res) => {
+        console.log(res)
+        return res.json();
+    })
+    .then((data) => {
+        console.log(data)
+    })
+}
+
 // Transcode image with specified size and compression level
 function Transcode() {
+
+    const imageFiles = files.files;
+
+    const formData = new FormData();
+
+    for (const file of imageFiles) {
+        console.log(file)
+        formData.append("food_image", file)
+    }
+
+    const options = {
+        method: 'POST',
+        body: formData
+    }
+    
+    apiCall(options)
     transcode.style.display = "none";
     cancel.style.display = "block";
 }
