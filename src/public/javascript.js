@@ -13,12 +13,12 @@ transcode.addEventListener('click', Transcode);
 function Upload() {
     instruction.style.display = "none";
     const imageFiles = files.files;
-
+    
     for (const file of imageFiles) {
         if (!validFileType(file)) continue;
         const image = document.createElement('img');
         const reader = new FileReader();
-        
+
         // Insert a row for each uploaded image
         reader.addEventListener("load", () => {
             image.src = reader.result;
@@ -65,6 +65,10 @@ function deleteRow(row)
 {
     let i = row.parentNode.parentNode.rowIndex;
     document.getElementById('image-table').deleteRow(i);
+
+    if (imageTable.rows.length === 0) {
+        instruction.style.display = "block";
+    }
 
     // Re-index rows
     for (let i = 0; i < imageTable.rows.length; i++) {
