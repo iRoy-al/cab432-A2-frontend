@@ -1,7 +1,22 @@
 const { resizeImage } = require('./services/sharpService');
 const { getObject, putObject, getDownloadURL } = require('./services/s3Service')
 
-const processImage = async (key, resize, compression) => {
+const processImage = async (key, resize, compression, buffer, ContentType) => {
+    
+    validateRequest(key, resize, compression);
+
+    const processedImageBuffer = await resizeImage(buffer, resize, compression);
+
+    const processedImageKey = generateProcessedKey(key, resize, compression);
+
+    await putObject(processedImageKey, processedImageBuffer, ContentType);
+
+    const downloadURL = await getDownloadURL(processedImageKey)
+
+    return {key: processedImageKey, url: downloadURL};
+}
+
+const processImageAPI = async (key, resize, compression) => {
     
     validateRequest(key, resize, compression);
 
@@ -56,4 +71,4 @@ const generateProcessedKey = (key, resize, compression) => {
     return `${base}-x${resize}-${compression}.${extension}`;
 }
 
-module.exports = { processImage };
+module.exports = { processImage, processImageAPI };

@@ -6,13 +6,13 @@ const { putObject, getObject, getDownloadURL } = require('./services/s3Service')
 const { getURLRedis, storeURLRedis } = require('./services/redisService')
 
 const handleRequest = async (images, resize, compression) => {
-    const result = await Promise.all(images.map(async ({originalname, buffer, mimetype}) => {
-        
-        const checksum = generateChecksum(buffer);
+    const result = await Promise.all(images.map(async (key) => {
 
-        const extension = originalname.split(".")[1];
+        const {Body, ContentType} = await getObject(key);
 
-        const key = `${checksum}.${extension}`;
+        const checksum = generateChecksum(Body);
+
+        const extension = key.split(".")[1];
 
         const processedKey = `${checksum}-x${resize}-${compression}.${extension}`;
 
@@ -32,7 +32,7 @@ const handleRequest = async (images, resize, compression) => {
             return {key: processedKey, url: url}
         }
 
-        const processedData = await processImage(key, resize, compression)
+        const processedData = await processImage(key, +resize, +compression, Body, ContentType)
 
         storeURLRedis(processedKey, processedData.url);
 
@@ -47,6 +47,7 @@ const zipImagesAndUpload = async (result) => {
 
     await Promise.all(result.map(async ({key, url}) => {
         const imgBuffer = await axios.get(url, { responseType: 'arraybuffer'});
+
         zip.file(key, imgBuffer.data)
     }))
 

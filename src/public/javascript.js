@@ -82,37 +82,61 @@ function deleteRow(row)
     }
 }
 
-function apiCall(options) {
-    const url = '/process'
+async function uploadToS3(file) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            contentType: file.type,
+            extension: file.name.split('.')[1],
+        })
+    }
+    const {uploadUrl, key} = await fetch('/upload', options).then(res => res.json());
 
-    fetch(url, options)
-    .then((res) => {
-        return(res.json());
+    const body = new FormData();
+    body.append('file', file)
+
+    await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": `${file.type}`
+          },
+        body: file
     })
-    .then((data) => {
-        download.href = data.downloadURL;
-    })
+
+    return key;
 }
 
 // Transcode image with specified size and compression level
-function Transcode() {
+async function Transcode() {
     const imageFiles = files.files;
-
-    const formData = new FormData();
-
-    for (let file of imageFiles) {
-        formData.append("image", file)
+    
+    const keys = []
+    for (const file of imageFiles) {
+        keys.push(await uploadToS3(file));
     }
-
-    formData.append("resize", resize.value)
-    formData.append("compression", compression.value)
 
     const options = {
         method: 'POST',
-        body: formData
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            keys: keys,
+            resize: resize.value,
+            compression: compression.value
+        })
     }
 
-    apiCall(options)
+    fetch('/process', options)
+        .then((res) => {
+            return(res.json());
+        })
+        .then((data) => {
+            download.href = data.downloadURL;
+        })
 
     files.style.display = "none";
     upload.style.display = "none";
