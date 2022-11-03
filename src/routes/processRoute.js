@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const { handleRequest } = require('../requestHandler');
-
 const router = express.Router();
 
 const upload = multer({
@@ -20,13 +19,10 @@ const upload = multer({
     }
 });
 
-
 router.post('/', upload.array('image'), async (req, res) => {
     try{
         const { resize, compression } = req.body;
         const result = await handleRequest(req.files, resize, compression);
-
-        console.log(result)
         
         res.send("Hi")
     }

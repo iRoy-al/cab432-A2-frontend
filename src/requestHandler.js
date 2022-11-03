@@ -1,5 +1,6 @@
 const axios = require('axios');
 const crypto = require('crypto');
+const JSZip = require('jszip');
 const { putObject, getObject, getDownloadURL } = require('./services/s3Service')
 
 const localURL = 'http://127.0.0.1:3001/';
@@ -28,7 +29,25 @@ const handleRequest = async (images, resize, compression) => {
 
         return await sendImageForResizing(key, buffer, mimetype, resize, compression);
     }))
-    return result;
+
+    return await zipImageAndUpload(result);
+}
+
+const zipImageAndUpload = async (result) => {
+    const zip = new JSZip();
+
+    await Promise.all(result.map(async ({key, url}) => {
+        const imgBuffer = await axios.get(url, { responseType: 'arraybuffer'});
+        zip.file(key, imgBuffer.data)
+    }))
+
+    const zipBuffer = await zip.generateAsync({type:'nodebuffer'})
+
+    const key = `${generateChecksum(zipBuffer)}.zip`;
+
+    await putObject(key, zipBuffer, 'application/zip');
+
+    return await getDownloadURL(key);
 }
 
 const generateChecksum = (str) => {
