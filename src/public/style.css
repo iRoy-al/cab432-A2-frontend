@@ -1,0 +1,49 @@
+h1, .form-label {
+    font-family: "Georgia", Georgia, "Times New Roman", Times, serif;
+    color: rgb(39, 39, 37);
+}
+
+#upload-image, #transcode, #cancel {
+    color: white;
+    background: rgb(0, 112, 116);
+}
+
+#delete {
+    color: rgb(39, 39, 37);
+    background: rgb(225, 146, 106);
+}
+
+head, body {
+    background: rgb(238, 231, 213);
+}
+
+form img {
+    object-fit:contain;
+    height: 64px;
+    width: 64px;
+    order: 1;
+}
+
+#image-table
+{
+    width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+#image-panel {
+    border-radius: 10px;
+    background: white;
+    width: 100%;
+    height: 300px;
+    overflow: auto;
+}
+
+#instruction {
+    line-height: 280px;
+    text-align: center;
+}
+
+#cancel {
+    display: none;
+}
