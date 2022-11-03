@@ -8,6 +8,7 @@ const compression = document.getElementById('compression-level');
 
 files.addEventListener('change', Upload);
 transcode.addEventListener('click', Transcode);
+
 // Upload one or multiple images to transcode
 function Upload() {
     instruction.style.display = "none";
@@ -17,14 +18,16 @@ function Upload() {
         if (!validFileType(file)) continue;
         const image = document.createElement('img');
         const reader = new FileReader();
+        
         // Insert a row for each uploaded image
         reader.addEventListener("load", () => {
             image.src = reader.result;
             const row = imageTable.insertRow(imageTable.rows.length);
-            row.insertCell(0).innerHTML =`<img src="${image.src}">`;
-            row.insertCell(1).innerHTML = `${file.name}`;
-            row.insertCell(2).innerHTML = `${formatFileSize(file.size)}`;
-            row.insertCell(3).innerHTML = `<input type="button" id="delete" value="Delete" onclick="deleteRow(this)" class="btn"/>`;
+            row.insertCell(0).innerHTML =`${imageTable.rows.length}`;
+            row.insertCell(1).innerHTML =`<img src="${image.src}">`;
+            row.insertCell(2).innerHTML = `${file.name}`;
+            row.insertCell(3).innerHTML = `${formatFileSize(file.size)}`;
+            row.insertCell(4).innerHTML = `<input type="button" id="delete" value="Delete" onclick="deleteRow(this)" class="btn"/>`;
         }, false);
 
         if (file) {
@@ -62,6 +65,11 @@ function deleteRow(row)
 {
     let i = row.parentNode.parentNode.rowIndex;
     document.getElementById('image-table').deleteRow(i);
+
+    // Re-index rows
+    for (let i = 0; i < imageTable.rows.length; i++) {
+        imageTable.rows[i].cells[0].innerHTML = i + 1;
+    }
 }
 
 function apiCall(options) { 
