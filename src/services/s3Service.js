@@ -1,18 +1,18 @@
-require('dotenv').config()
+// require('dotenv').config()
 const AWS = require("aws-sdk")
 
-const region = process.env.AWS_REGION;
-// const region = "ap-southeast-2"
+// const region = process.env.AWS_REGION;
+const region = "ap-southeast-2"
 const bucketName = "cab432-a2-n9748792";
 
-AWS.config.getCredentials((err) => {
-    if (err) console.log(err.stack);
-    else {
-        // console.log("get Credentials Success")
-        // console.log("Access key:", AWS.config.credentials.accessKeyId);
-        // console.log("Secret access key:", AWS.config.credentials.secretAccessKey)
-    }
-})
+// AWS.config.getCredentials((err) => {
+//     if (err) console.log(err.stack);
+//     else {
+//         // console.log("get Credentials Success")
+//         // console.log("Access key:", AWS.config.credentials.accessKeyId);
+//         // console.log("Secret access key:", AWS.config.credentials.secretAccessKey)
+//     }
+// })
 
 const s3 = new AWS.S3({apiVersion: '2006-03-01', region: region});
 

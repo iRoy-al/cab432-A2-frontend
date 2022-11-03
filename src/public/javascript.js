@@ -113,7 +113,6 @@ function Transcode() {
     }
 
     apiCall(options)
-    console.log()
 
     files.style.display = "none";
     upload.style.display = "none";

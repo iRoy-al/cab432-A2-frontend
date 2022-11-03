@@ -4,9 +4,9 @@ const JSZip = require('jszip');
 const { putObject, getObject, getDownloadURL } = require('./services/s3Service')
 const { getURLRedis, storeURLRedis } = require('./services/redisService')
 
-const localURL = 'http://127.0.0.1:3001/';
-const instanceURL = 'http://3.26.240.125:3000';
-const lbURL = 'http://n9748792-n10658327-A2-LB-842639760.ap-southeast-2.elb.amazonaws.com';
+// const localURL = 'http://127.0.0.1:3001/';
+// const instanceURL = 'http://3.26.240.125:3000';
+const lbURL = 'http://n9748792-n10658327-A2-LB-665426381.ap-southeast-2.elb.amazonaws.com';
 
 const handleRequest = async (images, resize, compression) => {
     const result = await Promise.all(images.map(async ({originalname, buffer, mimetype}) => {
@@ -97,7 +97,7 @@ const sendImageForResizing = async (key, buffer, mimetype, resize, compression) 
             compression: +compression
         }
 
-        const result = await axios.post(localURL, body);
+        const result = await axios.post(lbURL, body);
 
         console.log(`${key} has been processed`)
 

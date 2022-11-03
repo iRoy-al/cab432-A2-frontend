@@ -1,6 +1,8 @@
 const redis = require('redis');
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+    url: "redis://n9748792-n10658327-a2-cache.km2jzi.ng.0001.apse2.cache.amazonaws.com:6379"
+});
 
 (async () => {
     try {
