@@ -3,7 +3,7 @@ h1, .form-label {
     color: rgb(39, 39, 37);
 }
 
-#upload-image, #transcode, #cancel {
+#upload-image, #transcode, #cancel, #download {
     color: white;
     background: rgb(0, 112, 116);
 }
@@ -44,6 +44,6 @@ form img {
     text-align: center;
 }
 
-#cancel {
+#cancel, #download {
     display: none;
 }

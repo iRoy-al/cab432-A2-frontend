@@ -3,6 +3,7 @@ const path = require('path');
 const multer = require('multer');
 const { handleRequest } = require('../requestHandler');
 const router = express.Router();
+// const result = "";
 
 const upload = multer({
     storage: multer.memoryStorage({}),
@@ -19,16 +20,20 @@ const upload = multer({
     }
 });
 
-router.post('/', upload.array('image'), async (req, res) => {
+router.post('/', upload.array('image'), async (req, res, next) => {
     try{
         const { resize, compression } = req.body;
-        const result = await handleRequest(req.files, resize, compression);
-        
-        res.send("Hi")
+        const url = await handleRequest(req.files, resize, compression);
+        const downloadLink = {"downloadURL": url};
+        res.send(downloadLink);
     }
     catch (error) {
         res.status(error.statusCode).json({ error: error.error})
     }
 });
+
+// router.get('/download', (req, res) => {
+//     res.send(result);
+// })
 
 module.exports = router;

@@ -1,13 +1,19 @@
 const files = document.getElementById('image-files');
+const upload = document.getElementById('upload-image');
 const instruction = document.getElementById('instruction');
 const imageTable = document.getElementById('image-table');
 const transcode = document.getElementById('transcode');
 const cancel = document.getElementById('cancel');
 const resize = document.getElementById('resize-scale');
 const compression = document.getElementById('compression-level');
+const download = document.getElementById('download');
 
 files.addEventListener('change', Upload);
 transcode.addEventListener('click', Transcode);
+// download.addEventListener('click', () => {
+//     download.style.display = "none";
+//     upload.style.display = "block";
+// })
 
 // Upload one or multiple images to transcode
 function Upload() {
@@ -76,16 +82,15 @@ function deleteRow(row)
     }
 }
 
-function apiCall(options) { 
+function apiCall(options) {
     const url = '/process'
 
     fetch(url, options)
     .then((res) => {
-        console.log(res)
-        return res.json();
+        return(res.json());
     })
     .then((data) => {
-        console.log(data)
+        download.href = data.downloadURL;
     })
 }
 
@@ -108,12 +113,9 @@ function Transcode() {
     }
 
     apiCall(options)
+    console.log()
 
-    // transcode.style.display = "none";
-    // cancel.style.display = "block";
-}
-
-// Download transcoded image
-function Download() {
-    // Replace this code to download transcoded image
+    files.style.display = "none";
+    upload.style.display = "none";
+    download.style.display = "block";
 }
