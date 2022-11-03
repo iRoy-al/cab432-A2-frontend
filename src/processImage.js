@@ -20,11 +20,11 @@ const processImageAPI = async (key, resize, compression) => {
     
     validateRequest(key, resize, compression);
 
-    const {Body, ContentType} = await getObject(imageKey);
+    const {Body, ContentType} = await getObject(key);
 
     const processedImageBuffer = await resizeImage(Body, resize, compression);
 
-    const processedImageKey = generateProcessedKey(imageKey, resize, compression);
+    const processedImageKey = generateProcessedKey(key, resize, compression);
 
     await putObject(processedImageKey, processedImageBuffer, ContentType);
 
