@@ -65,7 +65,7 @@ function deleteRow(row)
 }
 
 function apiCall(options) { 
-    const url = '/test'
+    const url = '/process'
 
     fetch(url, options)
     .then((res) => {
@@ -79,16 +79,16 @@ function apiCall(options) {
 
 // Transcode image with specified size and compression level
 function Transcode() {
-    console.log(resize.value)
     const imageFiles = files.files;
 
     const formData = new FormData();
 
-    for (const file of imageFiles) {
+    for (let file of imageFiles) {
         formData.append("image", file)
-        formData.append("resizes", resize.value)
-        formData.append("compression", compression.value)
     }
+
+    formData.append("resize", resize.value)
+    formData.append("compression", compression.value)
 
     const options = {
         method: 'POST',
@@ -96,8 +96,9 @@ function Transcode() {
     }
 
     apiCall(options)
-    transcode.style.display = "none";
-    cancel.style.display = "block";
+
+    // transcode.style.display = "none";
+    // cancel.style.display = "block";
 }
 
 // Download transcoded image

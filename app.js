@@ -1,19 +1,19 @@
 const express = require('express');
 const path = require('path');
-const testRouter = require('./routes/testRoute');
+const processRouter = require('./src/routes/processRoute');
 const app = express();
 
 const hostname = '127.0.0.1';
 const port = 3000
 
 app.use(express.json())
-app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static(path.join(__dirname, '/src/public')));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/index.html'));
+    res.sendFile(path.join(__dirname, '/public/src/index.html'));
 });
 
-app.use('/test', testRouter);
+app.use('/process', processRouter);
 
 
 app.listen(port, function () {
