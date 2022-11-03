@@ -2,6 +2,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 const JSZip = require('jszip');
 const { putObject, getObject, getDownloadURL } = require('./services/s3Service')
+const { getURLRedis, storeURLRedis } = require('./services/redisService')
 
 const localURL = 'http://127.0.0.1:3001/';
 const instanceURL = 'http://3.26.240.125:3000';
@@ -18,22 +19,33 @@ const handleRequest = async (images, resize, compression) => {
 
         const processedKey = `${checksum}-x${resize}-${compression}.${extension}`;
 
-        // CHECK REDIS
+        let url = await getURLRedis(processedKey)
 
-        let url = await checkExistingProcessedImageS3(processedKey)
-
-        if (url) {
-            console.log(`Found ${processedKey} in S3`)
+        if(url)
+        {
+            console.log(`Found ${processedKey} in redis`)
             return {key: processedKey, url: url}
         }
 
-        return await sendImageForResizing(key, buffer, mimetype, resize, compression);
+        url = await checkExistingProcessedImageS3(processedKey)
+
+        if (url) {
+            console.log(`Found ${processedKey} in S3`)
+            storeURLRedis(processedKey, url);
+            return {key: processedKey, url: url}
+        }
+
+        const processedData = await sendImageForResizing(key, buffer, mimetype, resize, compression)
+
+        storeURLRedis(processedKey, processedData.url);
+
+        return processedData;
     }))
 
-    return await zipImageAndUpload(result);
+    return await zipImagesAndUpload(result);
 }
 
-const zipImageAndUpload = async (result) => {
+const zipImagesAndUpload = async (result) => {
     const zip = new JSZip();
 
     await Promise.all(result.map(async ({key, url}) => {
