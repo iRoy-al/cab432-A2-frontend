@@ -7,13 +7,14 @@ const cancel = document.getElementById('cancel');
 const resize = document.getElementById('resize-scale');
 const compression = document.getElementById('compression-level');
 const download = document.getElementById('download');
+const transcoding = document.getElementById('transcoding');
 
 files.addEventListener('change', Upload);
 transcode.addEventListener('click', Transcode);
-// download.addEventListener('click', () => {
-//     download.style.display = "none";
-//     upload.style.display = "block";
-// })
+download.addEventListener('click', () => {
+    download.style.display = "none";
+    upload.style.display = "block";
+})
 
 // Upload one or multiple images to transcode
 function Upload() {
@@ -82,20 +83,28 @@ function deleteRow(row)
     }
 }
 
-function apiCall(options) {
+async function apiCall(options) {
     const url = '/process'
-
     fetch(url, options)
     .then((res) => {
-        return(res.json());
+        return (res.json());
     })
     .then((data) => {
+        // Download image using image URL from S3
         download.href = data.downloadURL;
+        download.style.display = "block";
+        transcoding.style.display = "none";
+        transcode.style.display = "block";
     })
 }
 
 // Transcode image with specified size and compression level
 function Transcode() {
+    transcode.style.display = "none";
+    transcoding.style.display = "block";
+    files.style.display = "none";
+    upload.style.display = "none";
+
     const imageFiles = files.files;
 
     const formData = new FormData();
@@ -113,6 +122,7 @@ function Transcode() {
     }
 
     apiCall(options)
+    console.log()
 
     files.style.display = "none";
     upload.style.display = "none";
