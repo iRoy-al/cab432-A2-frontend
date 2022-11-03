@@ -4,7 +4,7 @@ const processRouter = require('./src/routes/processRoute');
 const { processImage } = require('./src/processImage');
 const app = express();
 
-const hostname = '127.0.0.1';
+const hostname = 'localhost';
 const port = 3000
 
 app.use(express.json())
