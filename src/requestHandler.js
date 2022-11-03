@@ -1,12 +1,9 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const JSZip = require('jszip');
+const { processImage } = require('./processImage')
 const { putObject, getObject, getDownloadURL } = require('./services/s3Service')
 const { getURLRedis, storeURLRedis } = require('./services/redisService')
-
-// const localURL = 'http://127.0.0.1:3001/';
-// const instanceURL = 'http://3.26.240.125:3000';
-const lbURL = 'http://n9748792-n10658327-A2-LB-665426381.ap-southeast-2.elb.amazonaws.com';
 
 const handleRequest = async (images, resize, compression) => {
     const result = await Promise.all(images.map(async ({originalname, buffer, mimetype}) => {
@@ -35,7 +32,7 @@ const handleRequest = async (images, resize, compression) => {
             return {key: processedKey, url: url}
         }
 
-        const processedData = await sendImageForResizing(key, buffer, mimetype, resize, compression)
+        const processedData = await processImage(key, resize, compression)
 
         storeURLRedis(processedKey, processedData.url);
 
@@ -81,30 +78,6 @@ const checkExistingProcessedImageS3 = async (key) => {
     }
     catch (error) {
         return null;
-    }
-}
-
-const sendImageForResizing = async (key, buffer, mimetype, resize, compression) => {
-
-    await putObject(key, buffer, mimetype);
-    
-    try {
-        console.log ("Sending Image for Processing")
-
-        const body = {
-            key: key,
-            resize: +resize,
-            compression: +compression
-        }
-
-        const result = await axios.post(lbURL, body);
-
-        console.log(`${key} has been processed`)
-
-        return result.data;
-    }
-    catch (error) {
-        throw { statusCode: error.response.status, error: error.response.data.error}
     }
 }
 
