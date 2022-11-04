@@ -83,46 +83,69 @@ function deleteRow(row)
     }
 }
 
-async function apiCall(options) {
-    const url = '/process'
-    fetch(url, options)
-    .then((res) => {
-        return (res.json());
+async function uploadToS3(file) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            contentType: file.type,
+            extension: file.name.split('.')[1],
+        })
+    }
+    const {uploadUrl, key} = await fetch('/upload', options).then(res => res.json());
+
+    const body = new FormData();
+    body.append('file', file)
+
+    await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": `${file.type}`
+          },
+        body: file
     })
-    .then((data) => {
-        // Download image using image URL from S3
-        download.href = data.downloadURL;
-        download.style.display = "block";
-        transcoding.style.display = "none";
-        transcode.style.display = "block";
-    })
+
+    return key;
 }
 
 // Transcode image with specified size and compression level
-function Transcode() {
+async function Transcode() {
     transcode.style.display = "none";
     transcoding.style.display = "block";
     files.style.display = "none";
     upload.style.display = "none";
 
     const imageFiles = files.files;
-
-    const formData = new FormData();
-
-    for (let file of imageFiles) {
-        formData.append("image", file)
+    
+    const keys = []
+    for (const file of imageFiles) {
+        keys.push(await uploadToS3(file));
     }
-
-    formData.append("resize", resize.value)
-    formData.append("compression", compression.value)
 
     const options = {
         method: 'POST',
-        body: formData
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            keys: keys,
+            resize: resize.value,
+            compression: compression.value
+        })
     }
 
-    apiCall(options)
-    console.log()
+    fetch('/process', options)
+        .then((res) => {
+            return(res.json());
+        })
+        .then((data) => {
+            download.href = data.downloadURL;
+            download.style.display = "block";
+            transcoding.style.display = "none";
+            transcode.style.display = "block";
+        })
 
     files.style.display = "none";
     upload.style.display = "none";

@@ -68,4 +68,19 @@ const getDownloadURL = async (key) => {
     return result;
 }
 
-module.exports = { putObject, getObject, getDownloadURL };
+const getUploadURL = async (key, contentType) => {
+    const params = {
+        Bucket: bucketName,
+        Key: key,
+        Expires: 60*60,
+        ContentType: contentType
+    }
+    const result = await s3.getSignedUrlPromise('putObject', params)
+        .catch((err) => {
+            console.log(`${err.code}: ${key}`)
+            throw { statusCode: err.statusCode, error: err.code}
+        });
+    return result;
+}
+
+module.exports = { putObject, getObject, getDownloadURL, getUploadURL };
