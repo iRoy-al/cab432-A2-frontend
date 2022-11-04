@@ -54,4 +54,4 @@ const generateProcessedKey = (key, resize, compression) => {
     return `${base}-x${resize}-${compression}.${extension}`;
 }
 
-module.exports = { processImage, processImageAPI };
+module.exports = { processImage };
