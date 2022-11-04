@@ -44,6 +44,6 @@ form img {
     text-align: center;
 }
 
-#download, #transcoding {
+#download {
     display: none;
 }

@@ -7,7 +7,6 @@ const cancel = document.getElementById('cancel');
 const resize = document.getElementById('resize-scale');
 const compression = document.getElementById('compression-level');
 const download = document.getElementById('download');
-const transcoding = document.getElementById('transcoding');
 
 files.addEventListener('change', Upload);
 transcode.addEventListener('click', Transcode);
@@ -112,8 +111,8 @@ async function uploadToS3(file) {
 
 // Transcode image with specified size and compression level
 async function Transcode() {
-    transcode.style.display = "none";
-    transcoding.style.display = "block";
+    transcode.innerText = "Transcoding...";
+    transcode.disabled = true;
     files.style.display = "none";
     upload.style.display = "none";
 
@@ -143,11 +142,10 @@ async function Transcode() {
         .then((data) => {
             download.href = data.downloadURL;
             download.style.display = "block";
-            transcoding.style.display = "none";
-            transcode.style.display = "block";
+            transcode.innerText = "Transcode";
+            transcode.disabled = false;
         })
 
     files.style.display = "none";
     upload.style.display = "none";
-    download.style.display = "block";
 }
