@@ -1,7 +1,6 @@
 // require('dotenv').config()
 const AWS = require("aws-sdk")
 
-// const region = process.env.AWS_REGION;
 const region = "ap-southeast-2"
 const bucketName = "cab432-a2-n9748792";
 

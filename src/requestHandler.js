@@ -1,50 +1,78 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const JSZip = require('jszip');
-const { processImage } = require('./processImage')
+const { resizeImage } = require('./services/sharpService');
 const { putObject, getObject, getDownloadURL } = require('./services/s3Service')
 const { getURLRedis, storeURLRedis } = require('./services/redisService')
+
+const validateRequest = (imageKey, resize, compression) => {
+
+    console.log("Validating Request Body")
+
+    console.log(`Key:${imageKey}, Resize: ${resize}, Compression: ${compression}`)
+
+    if (!imageKey[0])
+    {
+        console.log(`Image Key is missing`)
+        throw { statusCode: 400, error: "ImageKeyMissing"}
+    }
+
+    if (!resize)
+    {
+        console.log(`Resize is missing`)
+        throw { statusCode: 400, error: "ResizeMissing"}
+    }
+
+    if (!compression)
+    {
+        console.log(`Compression Level is missing`)
+        throw { statusCode: 400, error: "CompressionLevelMissing"}
+    }
+
+    console.log("Validation Success")
+}
 
 const handleRequest = async (images, resize, compression) => {
 
     const zip = new JSZip();
 
-    const result = await Promise.all(images.map(async (key) => {
+    const result = await Promise.all(images.map(async (uuID) => {
 
-        const {Body, ContentType} = await getObject(key);
+        const {Body, ContentType} = await getObject(uuID);
 
         const checksum = generateChecksum(Body);
 
-        const extension = key.split(".")[1];
+        const extension = uuID.split(".")[1];
 
         const processedKey = `${checksum}-x${resize}-${compression}.${extension}`;
 
-        const url = await getURLRedis(processedKey)
+        const redisURL = await getURLRedis(processedKey)
 
-        if(url)
+        if(redisURL)
         {
             console.log(`Found ${processedKey} in redis`)
-            const { data } = await axios.get(url, { responseType: 'arraybuffer'});
+            const { data } = await axios.get(redisURL, { responseType: 'arraybuffer'});
             zip.file(processedKey, data)
-            return {key: processedKey, url: url}
+            return {key: processedKey, url: redisURL}
         }
 
         const data = await checkExistingProcessedImageS3(processedKey)
 
-        if (data.url) {
+        if (data) {
             console.log(`Found ${processedKey} in S3`)
             storeURLRedis(processedKey, data.url);
             zip.file(processedKey, data.imageBuffer)
-            return {key: processedKey, url: url}
+            return {key: processedKey, url: data.url}
         }
 
-        const processedData = await processImage(key, +resize, +compression, Body, ContentType)
+        const processedData = await processImage(processedKey, +resize, +compression, Body, ContentType)
 
         storeURLRedis(processedKey, processedData.url);
         zip.file(processedKey, processedData.imageBuffer)
 
-        return processedData;
+        return {key: processedKey, url: processedData.url}
     }))
+
     const zipBuffer = await zip.generateAsync({type:'nodebuffer'})
 
     const key = `${generateChecksum(zipBuffer)}.zip`;
@@ -52,6 +80,17 @@ const handleRequest = async (images, resize, compression) => {
     await putObject(key, zipBuffer, 'application/zip');
 
     return await getDownloadURL(key);
+}
+
+const processImage = async (processedImageKey, resize, compression, buffer, ContentType) => {
+
+    const processedImageBuffer = await resizeImage(buffer, resize, compression);
+
+    await putObject(processedImageKey, processedImageBuffer, ContentType);
+
+    const downloadURL = await getDownloadURL(processedImageKey)
+
+    return {url: downloadURL, imageBuffer: processedImageBuffer};
 }
 
 const generateChecksum = (str) => {
@@ -65,15 +104,15 @@ const checkExistingProcessedImageS3 = async (key) => {
     try{
         console.log(`Checking for ${key} in S3`)
 
-        const imageBuffer = await getObject(key);
+        const {Body} = await getObject(key);
 
         const url = await getDownloadURL(key);
 
-        return {url, imageBuffer};
+        return {url, imageBuffer: Body};
     }
     catch (error) {
         return null;
     }
 }
 
-module.exports = { handleRequest };
+module.exports = { validateRequest, handleRequest, processImage };

@@ -1,13 +1,12 @@
 const express = require('express');
 const path = require('path');
 const { randomUUID } = require('crypto');
-const { handleRequest } = require('./src/requestHandler');
-const { processImage } = require('./src/processImage');
+const { validateRequest, handleRequest, processImage } = require('./src/requestHandler');
 const { getObject, getUploadURL } = require('./src/services/s3Service')
 
 const app = express();
 
-const hostname = 'localhost';
+const hostname = '127.0.0.1';
 const port = 3000
 
 app.use(express.json())
@@ -20,12 +19,12 @@ app.get('/', (req, res) => {
 app.post('/process', async (req, res) => {
     try{
         const { keys, resize, compression } = req.body;
-        
+
+        validateRequest(keys, resize, compression)
+
         const url = await handleRequest(keys, resize, compression);
 
-        const downloadLink = {"downloadURL": url};
-
-        res.send(downloadLink);
+        res.send({downloadURL: url});
     }
     catch (error) {
         res.status(error.statusCode).json({ error: error.error})
@@ -34,15 +33,25 @@ app.post('/process', async (req, res) => {
 
 app.post('/api/process', async (req, res) => {
     try{
-        const {key, resize, compression} = req.body
+        const {key, resize, compression} = req.body;
+
+        validateRequest(key, resize, compression);
 
         const {Body, ContentType} = await getObject(key);
-        
-        const {processedKey, url} = await processImage(key, resize, compression, Body, ContentType);
+
+        const keyArr = key.split(".");
+
+        const base = keyArr[0];
+
+        const extension = keyArr[1];
+
+        const processedKey = `${base}-x${resize}-${compression}.${extension}`;
+
+        const processedData = await processImage(processedKey, resize, compression, Body, ContentType);
 
         console.log(`Processed Image Key: ${processedKey}`)
         
-        res.status(200).json({key: processedKey, url: url});
+        res.status(200).json({key: processedKey, url: processedData.url});
     }
     catch (error) {
         res.status(error.statusCode).json({ error: error.error})
