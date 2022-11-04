@@ -2,8 +2,8 @@ const express = require('express');
 const path = require('path');
 const { randomUUID } = require('crypto');
 const { handleRequest } = require('./src/requestHandler');
-const { processImageAPI } = require('./src/processImage');
-const { getUploadURL } = require('./src/services/s3Service')
+const { processImage } = require('./src/processImage');
+const { getObject, getUploadURL } = require('./src/services/s3Service')
 
 const app = express();
 
@@ -36,7 +36,9 @@ app.post('/api/process', async (req, res) => {
     try{
         const {key, resize, compression} = req.body
 
-        const result = await processImageAPI(key, resize, compression);
+        const {Body, ContentType} = await getObject(key);
+        
+        const result = await processImage(key, resize, compression, Body, ContentType);
 
         console.log(`Processed Image Key: ${result.key}`)
         

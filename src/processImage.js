@@ -1,28 +1,11 @@
 const { resizeImage } = require('./services/sharpService');
-const { getObject, putObject, getDownloadURL } = require('./services/s3Service')
+const { putObject, getDownloadURL } = require('./services/s3Service')
 
 const processImage = async (key, resize, compression, buffer, ContentType) => {
     
     validateRequest(key, resize, compression);
 
     const processedImageBuffer = await resizeImage(buffer, resize, compression);
-
-    const processedImageKey = generateProcessedKey(key, resize, compression);
-
-    await putObject(processedImageKey, processedImageBuffer, ContentType);
-
-    const downloadURL = await getDownloadURL(processedImageKey)
-
-    return {key: processedImageKey, url: downloadURL};
-}
-
-const processImageAPI = async (key, resize, compression) => {
-    
-    validateRequest(key, resize, compression);
-
-    const {Body, ContentType} = await getObject(key);
-
-    const processedImageBuffer = await resizeImage(Body, resize, compression);
 
     const processedImageKey = generateProcessedKey(key, resize, compression);
 
