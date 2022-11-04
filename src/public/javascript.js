@@ -45,16 +45,13 @@ function Upload() {
 // Check the uploaded file type
 function validFileType(file) {
     const fileTypes = [
-        "image/apng",
-        "image/bmp",
-        "image/gif",
-        "image/jpeg",
-        "image/pjpeg",
         "image/png",
-        "image/svg+xml",
-        "image/tiff",
         "image/webp",
-        "image/x-icon"
+        "image/jpeg",
+        "image/gif",
+        "image/avif",
+        "image/tiff",
+        "image/svg",
     ];
     return fileTypes.includes(file.type);
 }
