@@ -38,11 +38,11 @@ app.post('/api/process', async (req, res) => {
 
         const {Body, ContentType} = await getObject(key);
         
-        const result = await processImage(key, resize, compression, Body, ContentType);
+        const {processedKey, url} = await processImage(key, resize, compression, Body, ContentType);
 
-        console.log(`Processed Image Key: ${result.key}`)
+        console.log(`Processed Image Key: ${processedKey}`)
         
-        res.status(200).json(result);
+        res.status(200).json({key: processedKey, url: url});
     }
     catch (error) {
         res.status(error.statusCode).json({ error: error.error})
