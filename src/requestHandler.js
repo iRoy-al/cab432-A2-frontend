@@ -6,6 +6,9 @@ const { putObject, getObject, getDownloadURL } = require('./services/s3Service')
 const { getURLRedis, storeURLRedis } = require('./services/redisService')
 
 const handleRequest = async (images, resize, compression) => {
+
+    const zip = new JSZip();
+
     const result = await Promise.all(images.map(async (key) => {
 
         const {Body, ContentType} = await getObject(key);
@@ -16,30 +19,39 @@ const handleRequest = async (images, resize, compression) => {
 
         const processedKey = `${checksum}-x${resize}-${compression}.${extension}`;
 
-        let url = await getURLRedis(processedKey)
+        const url = await getURLRedis(processedKey)
 
         if(url)
         {
             console.log(`Found ${processedKey} in redis`)
+            const { data } = await axios.get(url, { responseType: 'arraybuffer'});
+            zip.file(processedKey, data)
             return {key: processedKey, url: url}
         }
 
-        url = await checkExistingProcessedImageS3(processedKey)
+        const data = await checkExistingProcessedImageS3(processedKey)
 
-        if (url) {
+        if (data.url) {
             console.log(`Found ${processedKey} in S3`)
-            storeURLRedis(processedKey, url);
+            storeURLRedis(processedKey, data.url);
+            zip.file(processedKey, data.imageBuffer)
             return {key: processedKey, url: url}
         }
 
         const processedData = await processImage(key, +resize, +compression, Body, ContentType)
 
         storeURLRedis(processedKey, processedData.url);
+        zip.file(processedKey, processedData.imageBuffer)
 
         return processedData;
     }))
+    const zipBuffer = await zip.generateAsync({type:'nodebuffer'})
 
-    return await zipImagesAndUpload(result);
+    const key = `${generateChecksum(zipBuffer)}.zip`;
+
+    await putObject(key, zipBuffer, 'application/zip');
+
+    return await getDownloadURL(key);
 }
 
 const zipImagesAndUpload = async (result) => {
@@ -71,11 +83,11 @@ const checkExistingProcessedImageS3 = async (key) => {
     try{
         console.log(`Checking for ${key} in S3`)
 
-        await getObject(key);
+        const imageBuffer = await getObject(key);
 
         const url = await getDownloadURL(key);
 
-        return url;
+        return {url, imageBuffer};
     }
     catch (error) {
         return null;

@@ -13,7 +13,7 @@ const processImage = async (key, resize, compression, buffer, ContentType) => {
 
     const downloadURL = await getDownloadURL(processedImageKey)
 
-    return {key: processedImageKey, url: downloadURL};
+    return {key: processedImageKey, url: downloadURL, imageBuffer: processedImageBuffer};
 }
 
 const validateRequest = (imageKey, resize, compression) => {
