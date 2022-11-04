@@ -54,24 +54,6 @@ const handleRequest = async (images, resize, compression) => {
     return await getDownloadURL(key);
 }
 
-const zipImagesAndUpload = async (result) => {
-    const zip = new JSZip();
-
-    await Promise.all(result.map(async ({key, url}) => {
-        const imgBuffer = await axios.get(url, { responseType: 'arraybuffer'});
-
-        zip.file(key, imgBuffer.data)
-    }))
-
-    const zipBuffer = await zip.generateAsync({type:'nodebuffer'})
-
-    const key = `${generateChecksum(zipBuffer)}.zip`;
-
-    await putObject(key, zipBuffer, 'application/zip');
-
-    return await getDownloadURL(key);
-}
-
 const generateChecksum = (str) => {
     return crypto
         .createHash('sha256')
