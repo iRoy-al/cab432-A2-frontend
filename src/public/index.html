@@ -18,7 +18,10 @@
             <div class="col-10">
                 <div class="row mx-2">
                     <div id="image-panel">
-                        <div id="instruction">Upload one or more images to resize</div>
+                        <div id="instruction">
+                            Upload one or more images to resize, 
+                            we support JPEG, PNG, WEBP, GIF, AVIF, TIFF, SVG
+                        </div>
                         <form method="post" enctype="multipart/form-data">
                             <table class="table table-hover" id="image-table"></table>
                         </form>
@@ -62,7 +65,7 @@
                     </div>
                 </div>
                 <div class="row my-4 mx-2">
-                    <button type="button" id="transcode" class="btn btn-lg">Transcode</button>
+                    <button type="button" id="transcode" class="btn btn-lg" disabled>Transcode</button>
                 </div>
             </div>
             <div class="col-1"></div>

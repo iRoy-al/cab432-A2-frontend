@@ -29,6 +29,7 @@ form img {
     width: 100%;
     overflow: hidden;
     word-wrap: break-word;
+    flex-wrap: wrap-reverse;
 }
 
 #image-panel {
@@ -40,7 +41,6 @@ form img {
 }
 
 #instruction {
-    line-height: 280px;
     text-align: center;
 }
 
