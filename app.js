@@ -37,21 +37,13 @@ app.post('/api/process', async (req, res) => {
 
         validateRequest(key, resize, compression);
 
-        const {Body, ContentType} = await getObject(key);
+        const {Body} = await getObject(key);
 
-        const keyArr = key.split(".");
+        const {imageBuffer} = await processImage(resize, compression, Body);
 
-        const base = keyArr[0];
-
-        const extension = keyArr[1];
-
-        const processedKey = `${base}-x${resize}-${compression}.${extension}`;
-
-        const processedData = await processImage(processedKey, resize, compression, Body, ContentType);
-
-        console.log(`Processed Image Key: ${processedKey}`)
+        console.log(`Processed Image Key: ${key}`)
         
-        res.status(200).json({key: processedKey, url: processedData.url});
+        res.status(200).json({key: key});
     }
     catch (error) {
         res.status(error.statusCode).json({ error: error.error})

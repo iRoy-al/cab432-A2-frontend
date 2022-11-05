@@ -65,12 +65,14 @@ const handleRequest = async (images, resize, compression) => {
             return {key: processedKey, url: data.url}
         }
 
-        const processedData = await processImage(processedKey, +resize, +compression, Body, ContentType)
+        const processedData = await processImage(+resize, +compression, Body)
+        await putObject(processedKey, processedData.imageBuffer, ContentType);
+        const processedDownloadURL = await getDownloadURL(processedKey);
 
-        storeURLRedis(processedKey, processedData.url);
+        storeURLRedis(processedKey, processedDownloadURL);
         zip.file(processedKey, processedData.imageBuffer)
 
-        return {key: processedKey, url: processedData.url}
+        return {key: processedKey, url: processedDownloadURL}
     }))
 
     const zipBuffer = await zip.generateAsync({type:'nodebuffer'})
@@ -82,15 +84,11 @@ const handleRequest = async (images, resize, compression) => {
     return await getDownloadURL(key);
 }
 
-const processImage = async (processedImageKey, resize, compression, buffer, ContentType) => {
+const processImage = async (resize, compression, buffer) => {
 
     const processedImageBuffer = await resizeImage(buffer, resize, compression);
 
-    await putObject(processedImageKey, processedImageBuffer, ContentType);
-
-    const downloadURL = await getDownloadURL(processedImageKey)
-
-    return {url: downloadURL, imageBuffer: processedImageBuffer};
+    return {imageBuffer: processedImageBuffer};
 }
 
 const generateChecksum = (str) => {
