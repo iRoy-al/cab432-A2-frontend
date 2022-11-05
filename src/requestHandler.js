@@ -65,7 +65,7 @@ const handleRequest = async (images, resize, compression) => {
             return {key: processedKey, url: data.url}
         }
 
-        const processedData = await processImage(+resize, +compression, Body)
+        const processedData = await resizeImage(Body, +resize, +compression);
         await putObject(processedKey, processedData.imageBuffer, ContentType);
         const processedDownloadURL = await getDownloadURL(processedKey);
 
