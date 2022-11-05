@@ -175,7 +175,7 @@ function Download() {
 
 function DisplayErrorMessage() {
     imageFiles = [];
-    imageTable.remove();
+    imageTable.innerHTML = "";
     download.style.display = "none";
     upload.style.display = "block";
     instruction.innerText = "Something went wrong, transcoding failed";
