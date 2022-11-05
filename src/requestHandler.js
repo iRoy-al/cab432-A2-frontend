@@ -84,13 +84,6 @@ const handleRequest = async (images, resize, compression) => {
     return await getDownloadURL(key);
 }
 
-const processImage = async (resize, compression, buffer) => {
-
-    const processedImageBuffer = await resizeImage(buffer, resize, compression);
-
-    return {imageBuffer: processedImageBuffer};
-}
-
 const generateChecksum = (str) => {
     return crypto
         .createHash('sha256')
