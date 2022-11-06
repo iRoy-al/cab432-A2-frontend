@@ -66,11 +66,11 @@ const handleRequest = async (images, resize, compression) => {
         }
 
         const processedData = await resizeImage(Body, +resize, +compression);
-        await putObject(processedKey, processedData.imageBuffer, ContentType);
+        await putObject(processedKey, processedData, ContentType);
         const processedDownloadURL = await getDownloadURL(processedKey);
 
         storeURLRedis(processedKey, processedDownloadURL);
-        zip.file(processedKey, processedData.imageBuffer)
+        zip.file(processedKey, processedData)
 
         return {key: processedKey, url: processedDownloadURL}
     }))
