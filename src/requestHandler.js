@@ -106,4 +106,4 @@ const checkExistingProcessedImageS3 = async (key) => {
     }
 }
 
-module.exports = { validateRequest, handleRequest, processImage };
+module.exports = { validateRequest, handleRequest };
